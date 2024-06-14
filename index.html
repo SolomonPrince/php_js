@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Исполнитель операции</title>
+</head>
+<body>
+    <div id="results"></div>
+    <script>
+        async function processOperations(offset = 0, limit = 1000) {
+            try {
+                const response = await fetch(`operations.php?offset=${offset}&limit=${limit}`);
+                const data = await response.json();
+
+                // Выводим результаты операций на страницу
+                const resultsDiv = document.getElementById('results');
+                data.results.forEach(result => {
+                    const p = document.createElement('p');
+                    p.textContent = result;
+                    resultsDiv.appendChild(p);
+                });
+
+                // Если есть еще операции для выполнения, вызываем функцию снова
+                if (data.has_more) {
+                    processOperations(offset + limit, limit);
+                } else {
+                    console.log('Все операции выполнены');
+                }
+            } catch (error) {
+                console.error('Произошла ошибка:', error);
+            }
+        }
+
+        // Запуск процесса
+        processOperations();
+    </script>
+</body>
+</html>
